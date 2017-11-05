@@ -9,7 +9,10 @@ public class UserClass {
     String usedId;
     String firstName;
     String lastName;
+public static void main ()
+{
 
+}
     public String getUserName() {
         return userName;
     }

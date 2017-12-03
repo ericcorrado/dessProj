@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dessproject.dessproject.view.WallActivity">
+    tools:context="com.dessproject.dessproject.backing.WallActivity">
 
     <EditText
         android:id="@+id/statusInput"
@@ -30,4 +30,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/statusInput" />
+
+    <ScrollView
+        android:layout_width="395dp"
+        android:layout_height="525dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="70dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

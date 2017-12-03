@@ -1,13 +1,14 @@
-package com.dessproject.dessproject.view;
+package com.dessproject.dessproject.backing;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import com.dessproject.dessproject.R;
 
 public class WallActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_wall);
+        setContentView(R.layout.activity_wall);
     }
 }

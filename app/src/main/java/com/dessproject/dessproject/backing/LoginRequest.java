@@ -9,7 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
 public class LoginRequest extends StringRequest {
-    private static final String LOGIN_REQUEST_URL = "http://pittdssproject.000webhost.com/Login.php";
+    private static final String LOGIN_REQUEST_URL = "https://pittdssproject.000webhostapp.com/Login.php";
     private Map<String, String> params;
 
     public LoginRequest(String username, String password, Response.Listener<String> listener) {

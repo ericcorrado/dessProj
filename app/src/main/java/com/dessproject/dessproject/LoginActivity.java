@@ -24,6 +24,9 @@ import com.dessproject.dessproject.backing.LoginRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -47,8 +50,24 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String username = ETUserName.getText().toString();
-                final String password = ETPassword.getText().toString();
+                String password = ETPassword.getText().toString();
+                try {
 
+                    MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+                    digest.update(password.getBytes());
+                    byte messageDigest[] = digest.digest();
+
+                    StringBuffer hexString = new StringBuffer();
+                    for (int i = 0; i < messageDigest.length; i++) {
+                        String h = Integer.toHexString(0xFF & messageDigest[i]);
+                        while (h.length() < 2)
+                            h = "0" + h;
+                        hexString.append(h);
+                    }
+                    password = hexString.toString();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
                 // Response received from the server
                 Response.Listener<String> responseListener = new Response.Listener<String>() {
                     @Override
@@ -58,12 +77,11 @@ public class LoginActivity extends AppCompatActivity {
                             boolean success = jsonResponse.getBoolean("success");
 
                             if (success) {
-                                String name = jsonResponse.getString("name");
-                                int age = jsonResponse.getInt("age");
+                                String name = jsonResponse.getString("fName");
+
 
                                 Intent intent = new Intent(LoginActivity.this, UserAreaActivity.class);
                                 intent.putExtra("name",name);
-                                intent.putExtra("age", age);
                                 intent.putExtra("username", username);
                                 LoginActivity.this.startActivity(intent);
                             } else {

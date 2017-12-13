@@ -14,9 +14,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import com.dessproject.dessproject.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Base64;
 
 public class WallActivity extends AppCompatActivity {
 
@@ -52,7 +54,8 @@ public class WallActivity extends AppCompatActivity {
                                 for (int i = 0; i < numRows; i++) {
                                     JSONObject curObject = jsonResponse.getJSONObject(String.valueOf(i));
                                     PostClass newPost = new PostClass();
-                                    newPost.setContent(curObject.getString("content"));
+                                    String decodedContent = new String(Base64.getDecoder().decode(curObject.getString("content").getBytes()));
+                                    newPost.setContent(decodedContent);
                                     postList.add(newPost.getContent());
                                 }
                                 WallListView.posts = postList;
@@ -75,6 +78,7 @@ public class WallActivity extends AppCompatActivity {
                 RequestQueue queue = Volley.newRequestQueue(WallActivity.this);
                 queue.add(wallRequest1);
 
+
             }
         });
 
@@ -84,13 +88,49 @@ public class WallActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-               // final String postToSave = post.getText().toString();
-               // final Date date = new Date();
-                PostClass newPost = new PostClass();
-                Intent postIntent = new Intent(WallActivity.this, SelectConnectionsActivity.class);
-                postIntent.putExtra("post",newPost);
-                startActivity(postIntent);
-                finish();
+                final int uId = 4;
+                Response.Listener<String> responseListener = new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            boolean success = jsonResponse.getBoolean("success");
+                            if (success) {
+                                Intent intent = new Intent(WallActivity.this, WallActivity.class);
+                                WallActivity.this.startActivity(intent);
+                                int numRows = jsonResponse.getInt("numRows");
+                                List<UserClass> userList = new ArrayList<UserClass>();
+                                for (int i = 0; i < numRows; i++) {
+                                    JSONObject curObject = jsonResponse.getJSONObject(String.valueOf(i));
+                                    UserClass user = new UserClass();
+                                    user.setUsedId(curObject.getString("cId"));
+                                    user.setFirstName(curObject.getString("fName"));
+                                    user.setLastName(curObject.getString("lName"));
+                                    userList.add(user);
+                                }
+                                SelectConnectionsActivity.connections = userList;
+                                PostClass newPost = new PostClass();
+                                Intent postIntent = new Intent(WallActivity.this, SelectConnectionsActivity.class);
+                                postIntent.putExtra("post",newPost);
+                                startActivity(postIntent);
+                                finish();
+                            } else {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(WallActivity.this);
+                                builder.setMessage("Post Failed")
+                                        .setNegativeButton("Retry", null)
+                                        .create()
+                                        .show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                ConnectionsRequest connectionsRequest = new ConnectionsRequest(uId, responseListener);
+                RequestQueue queue = Volley.newRequestQueue(WallActivity.this);
+                queue.add(connectionsRequest);
+
+
 
 
             }

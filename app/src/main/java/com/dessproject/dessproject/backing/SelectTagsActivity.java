@@ -1,6 +1,7 @@
 package com.dessproject.dessproject.backing;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -9,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.dessproject.dessproject.R;
+import com.dessproject.dessproject.adapters.TagAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +21,26 @@ import java.util.List;
 
 public class SelectTagsActivity extends ListActivity{
     static List tags;
-    List selectedTags = new ArrayList();
+    PostClass newPost;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        newPost = (PostClass) getIntent().getSerializableExtra("post");
+        setListAdapter(new TagAdapter(this, tags));
 
-        setListAdapter(new ArrayAdapter<String>(this, R.layout.select_tag,tags));
 
-        ListView listView = getListView();
-        listView.setTextFilterEnabled(true);
+    }
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                selectedTags.add(((TextView) view).getText());
-            }
-        });
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        newPost.getAttatchedTags().add((Integer) v.getTag());
+        Intent postIntent = new Intent(SelectTagsActivity.this, PostActivity.class);
+        postIntent.putExtra("post",newPost);
+        startActivity(postIntent);
+        finish();
+
+
 
     }
 }

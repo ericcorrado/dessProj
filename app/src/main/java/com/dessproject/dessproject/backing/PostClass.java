@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class PostClass implements Serializable{
     public int postId;
     public String content;
-    public List<Integer> attatchedTags;
+    public List<Integer> attatchedTags = new ArrayList<Integer>();
     public int authorId;
-    public List<Integer> attatchedUsers;
+    public List<Integer> attatchedUsers = new ArrayList<Integer>();
 
     public int getPostId() {
         return postId;

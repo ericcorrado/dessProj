@@ -25,13 +25,19 @@ public class WallRequest extends StringRequest {
 
 
 
-    public WallRequest(String post, Date dateTime, Response.Listener<String> listener) {
+    public WallRequest(String post,String title, String tId,String aId, Date dateTime, Response.Listener<String> listener) {
 
         super(Method.POST, REGISTER_REQUEST_URL, listener, null);
 
         params = new HashMap<>();
 
         params.put("post", post);
+
+        params.put("title", title);
+
+        params.put("tId", tId);
+
+        params.put("aId", aId);
 
         params.put("date", dateTime.toString());
 
@@ -47,6 +53,7 @@ public class WallRequest extends StringRequest {
         params.put("id", String.valueOf(id));
 
     }
+
 
 
 

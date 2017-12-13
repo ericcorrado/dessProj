@@ -1,16 +1,17 @@
 package com.dessproject.dessproject.backing;
 
 import java.util.*;
+import java.io.Serializable;
 /**
  * Created by Eric on 11/12/2017.
  */
 
-public class PostClass {
+public class PostClass implements Serializable{
     public int postId;
     public String content;
-    public List<TagClass> attatchedTags;
+    public List<Integer> attatchedTags;
     public int authorId;
-    public List<UserClass> attatchedUsers;
+    public List<Integer> attatchedUsers;
 
     public int getPostId() {
         return postId;
@@ -28,11 +29,11 @@ public class PostClass {
         this.content = content;
     }
 
-    public List<TagClass> getAttatchedTags() {
+    public List<Integer> getAttatchedTags() {
         return attatchedTags;
     }
 
-    public void setAttatchedTags(List<TagClass> attatchedTags) {
+    public void setAttatchedTags(List<Integer> attatchedTags) {
         this.attatchedTags = attatchedTags;
     }
 
@@ -44,11 +45,11 @@ public class PostClass {
         this.authorId = authorId;
     }
 
-    public List<UserClass> getAttatchedUsers() {
+    public List<Integer> getAttatchedUsers() {
         return attatchedUsers;
     }
 
-    public void setAttatchedUsers(List<UserClass> attatchedUsers) {
+    public void setAttatchedUsers(List<Integer> attatchedUsers) {
         this.attatchedUsers = attatchedUsers;
     }
 

@@ -79,4 +79,5 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="share_status">Enter a status update</string>
     <string name="update">Update</string>
+    <string name="title_activity_post">PostActivity</string>
 </resources>

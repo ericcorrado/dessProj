@@ -27,6 +27,9 @@
         <activity android:name=".backing.WallListView"></activity>
         <activity android:name=".backing.SelectConnectionsActivity"></activity>
         <activity android:name=".backing.SelectTagsActivity"></activity>
+        <activity android:name=".backing.EncryptionTools">
+
+        </activity>
         <activity
             android:name=".backing.PostActivity"
             android:label="@string/title_activity_post"

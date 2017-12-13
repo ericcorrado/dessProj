@@ -14,13 +14,27 @@ import org.json.JSONObject;
 import com.dessproject.dessproject.R;
 
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Base64;
+import java.util.Queue;
+
+import android.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class PostActivity extends AppCompatActivity {
     PostClass newPost;
+    PublicKey publicKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +47,63 @@ public class PostActivity extends AppCompatActivity {
         final EditText contentBox = (EditText) findViewById(R.id.contentBox);
         final EditText titleBox = (EditText) findViewById(R.id.titleBox);
 
+        Response.Listener<String> responseListener2 = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    String jsonResponse = new String(response);
+                    byte[] keyBytes = Base64.decode(jsonResponse.toString().getBytes(),Base64.NO_WRAP);
+                    publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(keyBytes));
+
+
+                }
+                catch (NoSuchAlgorithmException e){
+                    e.printStackTrace();
+                }
+                catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+        };
+        PublicKeyRequest publicKeyRequest = new PublicKeyRequest(responseListener2);
+        RequestQueue queue = Volley.newRequestQueue(PostActivity.this);
+        queue.add(publicKeyRequest);
+
         submitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 final String postToSave =  contentBox.getText().toString();
-                final String encodedPost = new String(Base64.getEncoder().encode(postToSave.getBytes()));
+                EncryptionTools newTools = new EncryptionTools();
+
+                Cipher cipher;
+                 byte[] encodedPost = null;
+
+
+
+
+
+
+                try{
+                    cipher = Cipher.getInstance("RSA");
+                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                    encodedPost = cipher.doFinal(postToSave.getBytes());
+                }
+                catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                }
+
+
                  final String title = titleBox.getText().toString();
 
                 Response.Listener<String> responseListener = new Response.Listener<String>() {
@@ -66,7 +133,7 @@ public class PostActivity extends AppCompatActivity {
                 };
 
                 Date curDate = new Date();
-                WallRequest wallRequest = new WallRequest(encodedPost, title, String.valueOf(newPost.getAttatchedTags().get(0)), String.valueOf(newPost.getAttatchedUsers().get(0)), curDate, responseListener);
+                WallRequest wallRequest = new WallRequest(new String(Base64.encodeToString(encodedPost, android.util.Base64.NO_WRAP)), title, String.valueOf(newPost.getAttatchedTags().get(0)), String.valueOf(newPost.getAttatchedUsers().get(0)),"1", curDate, responseListener);
                 RequestQueue queue = Volley.newRequestQueue(PostActivity.this);
                 queue.add(wallRequest);
 

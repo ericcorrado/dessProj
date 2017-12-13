@@ -15,12 +15,25 @@ import org.json.JSONObject;
 import com.dessproject.dessproject.R;
 
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Base64;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 public class WallActivity extends AppCompatActivity {
+
+    PrivateKey privateKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +41,34 @@ public class WallActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wall);
         final Button subButton = (Button) findViewById(R.id.button);
         final Button viewButton = (Button) findViewById(R.id.button2);
+
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    String jsonResponse = new String(response);
+
+                    byte[] keyBytes = android.util.Base64.decode(jsonResponse.toString().getBytes(), android.util.Base64.NO_WRAP);
+
+                    privateKey =  KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
+                    System.out.print(privateKey);
+
+                }
+                catch (NoSuchAlgorithmException e){
+                    e.printStackTrace();
+                }
+                catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+        };
+        PrivateKeyRequest privateKeyRequest = new PrivateKeyRequest(responseListener);
+        RequestQueue queue = Volley.newRequestQueue(WallActivity.this);
+        queue.add(privateKeyRequest);
 
 
 
@@ -54,8 +95,26 @@ public class WallActivity extends AppCompatActivity {
                                 for (int i = 0; i < numRows; i++) {
                                     JSONObject curObject = jsonResponse.getJSONObject(String.valueOf(i));
                                     PostClass newPost = new PostClass();
-                                    String decodedContent = new String(Base64.getDecoder().decode(curObject.getString("content").getBytes()));
-                                    newPost.setContent(decodedContent);
+                                    Cipher cipher;
+                                    String decodedPost = null;
+                                    byte[] decodedContent = Base64.getDecoder().decode(curObject.getString("content").getBytes());
+                                    try{
+                                        cipher = Cipher.getInstance("RSA");
+                                        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+                                        decodedPost = new String(cipher.doFinal(decodedContent));
+                                    }
+                                    catch (NoSuchAlgorithmException e) {
+                                        e.printStackTrace();
+                                    } catch (NoSuchPaddingException e) {
+                                        e.printStackTrace();
+                                    } catch (InvalidKeyException e) {
+                                        e.printStackTrace();
+                                    } catch (BadPaddingException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalBlockSizeException e) {
+                                        e.printStackTrace();
+                                    }
+                                    newPost.setContent(decodedPost);
                                     postList.add(newPost.getContent());
                                 }
                                 WallListView.posts = postList;

@@ -1,8 +1,4 @@
-package com.dessproject.dessproject;
-
-/**
- * Created by Michael on 12/12/2017.
- */
+package com.dessproject.dessproject.view;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -16,14 +12,21 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class AppCompatPreferenceActivity extends PreferenceActivity {
+/**
+ * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
+ * to be used with AppCompat.
+ */
+public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
+
     private AppCompatDelegate mDelegate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -37,10 +40,12 @@ public class AppCompatPreferenceActivity extends PreferenceActivity {
     public void setSupportActionBar(@Nullable Toolbar toolbar) {
         getDelegate().setSupportActionBar(toolbar);
     }
+
     @Override
     public MenuInflater getMenuInflater() {
         return getDelegate().getMenuInflater();
     }
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         getDelegate().setContentView(layoutResID);
@@ -55,43 +60,50 @@ public class AppCompatPreferenceActivity extends PreferenceActivity {
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         getDelegate().setContentView(view, params);
     }
+
     @Override
     public void addContentView(View view, ViewGroup.LayoutParams params) {
         getDelegate().addContentView(view, params);
     }
+
     @Override
     protected void onPostResume() {
-    super.onPostResume();
-    getDelegate().onPostResume();
+        super.onPostResume();
+        getDelegate().onPostResume();
     }
+
     @Override
     protected void onTitleChanged(CharSequence title, int color) {
-    super.onTitleChanged(title, color);
-    getDelegate().setTitle(title);
+        super.onTitleChanged(title, color);
+        getDelegate().setTitle(title);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    getDelegate().onConfigurationChanged(newConfig);
+        super.onConfigurationChanged(newConfig);
+        getDelegate().onConfigurationChanged(newConfig);
     }
+
     @Override
     protected void onStop() {
         super.onStop();
         getDelegate().onStop();
     }
+
     @Override
     protected void onDestroy() {
-    super.onDestroy();
-    getDelegate().onDestroy();
+        super.onDestroy();
+        getDelegate().onDestroy();
     }
+
     public void invalidateOptionsMenu() {
-    getDelegate().invalidateOptionsMenu();
+        getDelegate().invalidateOptionsMenu();
     }
+
     private AppCompatDelegate getDelegate() {
-    if (mDelegate == null) {
-    mDelegate = AppCompatDelegate.create(this, null);
-    }
-    return mDelegate;
+        if (mDelegate == null) {
+            mDelegate = AppCompatDelegate.create(this, null);
+        }
+        return mDelegate;
     }
 }
